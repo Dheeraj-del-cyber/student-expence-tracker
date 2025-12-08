@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Expense Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #160624, #2fa9cb, #63520b);
+        color: #fff;
+    }
+    .container {
+        max-width: 700px;
+        margin: 20px auto;
+        padding: 20px;
+        background: rgba(0,0,0,0.6);
+        border-radius: 10px;
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    input, button {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        border: none;
+        font-size: 1em;
+    }
+    input[type="date"], input[type="text"], input[type="number"] {
+        width: 100%;
+    }
+    button {
+        cursor: pointer;
+        background: #ff3d00;
+        color: #fff;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    button:hover {
+        background: #8b2a0d;
+        transform: scale(1.05);
+    }
+
+    .dashboard {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+    .dashboard div {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        border-radius: 8px;
+        flex: 1 1 30%;
+        margin: 5px;
+        text-align: center;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        padding: 8px;
+        text-align: center;
+        border-bottom: 1px solid #762929;
+    }
+    td button {
+        padding: 5px;
+        font-size: 0.9em;
+        background: #ff3d00;
+    }
+    td button:hover {
+        background: #ff5c3c;
+    }
+
+    input#search {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: none;
+        font-size: 1em;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .expense-row {
+        animation: fadeIn 0.5s ease;
+    }
+
+    @media (max-width: 600px) {
+        .dashboard div {
+            flex: 1 1 100%;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>📊 Student Expense Calculator</h1>
+
+    <label for="budget">Monthly Budget 💰:</label>
+    <input type="number" id="budget" placeholder="Enter your budget">
+
+    <div class="dashboard">
+        <div>Total Expenses: ₹<span id="totalExpenses">0</span></div>
+        <div>Remaining Budget: ₹<span id="remainingBudget">0</span></div>
+        <div>Total Entries: <span id="totalEntries">0</span></div>
+    </div>
+
+    <h2>Add Expense ➕</h2>
+    <input type="date" id="date">
+    <input type="text" id="item" placeholder="Item Name 📝">
+    <input type="number" id="amount" placeholder="Amount ₹">
+    <button id="addExpense">Add Expense ✅</button>
+
+    <input type="text" id="search" placeholder="Search by item or date 🔍">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date 📅</th>
+                <th>Item 🛒</th>
+                <th>Amount ₹</th>
+                <th>Action ⚡</th>
+            </tr>
+        </thead>
+        <tbody id="expenseTable"></tbody>
+    </table>
+</div>
+
+<script>
+let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+let monthlyBudget = parseFloat(localStorage.getItem('budget')) || 0;
+
+const totalExpensesEl = document.getElementById('totalExpenses');
+const remainingBudgetEl = document.getElementById('remainingBudget');
+const totalEntriesEl = document.getElementById('totalEntries');
+const budgetInput = document.getElementById('budget');
+const searchInput = document.getElementById('search');
+
+budgetInput.value = monthlyBudget;
+
+function updateDashboard() {
+    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+    totalExpensesEl.textContent = total;
+    remainingBudgetEl.textContent = monthlyBudget - total;
+    totalEntriesEl.textContent = expenses.length;
+}
+
+function renderTable(list = expenses) {
+    const table = document.getElementById('expenseTable');
+    table.innerHTML = '';
+    list.forEach((e, index) => {
+        const row = document.createElement('tr');
+        row.classList.add('expense-row');
+        row.innerHTML = `
+            <td>${e.date}</td>
+            <td>${e.item}</td>
+            <td>₹${e.amount}</td>
+            <td>
+                <button onclick="editExpense(${index})">✏</button>
+                <button onclick="deleteExpense(${index})">🗑</button>
+            </td>
+        `;
+        table.appendChild(row);
+    });
+}
+
+document.getElementById('addExpense').addEventListener('click', () => {
+    const date = document.getElementById('date').value;
+    const item = document.getElementById('item').value.trim();
+    const amount = parseFloat(document.getElementById('amount').value);
+
+    if (!date || !item || !amount) {
+        alert("Please fill all fields correctly!");
+        return;
+    }
+
+    expenses.push({ date, item, amount });
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+
+    renderTable();
+    updateDashboard();
+
+    document.getElementById('date').value = '';
+    document.getElementById('item').value = '';
+    document.getElementById('amount').value = '';
+});
+
+function editExpense(index) {
+    const e = expenses[index];
+    document.getElementById('date').value = e.date;
+    document.getElementById('item').value = e.item;
+    document.getElementById('amount').value = e.amount;
+    deleteExpense(index);
+}
+
+function deleteExpense(index) {
+    expenses.splice(index, 1);
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+    renderTable();
+    updateDashboard();
+}
+
+budgetInput.addEventListener('input', () => {
+    monthlyBudget = parseFloat(budgetInput.value) || 0;
+    localStorage.setItem('budget', monthlyBudget);
+    updateDashboard();
+});
+
+searchInput.addEventListener('input', () => {
+    const filter = searchInput.value.toLowerCase();
+    const filtered = expenses.filter(e => 
+        e.item.toLowerCase().includes(filter) || e.date.includes(filter)
+    );
+    renderTable(filtered);
+});
+
+// Initialize
+renderTable();
+updateDashboard();
+</script>
+</body>
+</html>
