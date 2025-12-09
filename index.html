@@ -1,105 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Expense Calculator</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Student Expense Calculator — Weekly Category Report</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(135deg, #160624, #2fa9cb, #63520b);
-        color: #fff;
+    :root{
+        --bg1:#160624; --bg2:#2fa9cb; --bg3:#63520b;
+        --card-bg: rgba(0,0,0,0.6);
+        --accent:#ff3d00;
+        --accent-hover:#ff6a3c;
+        --muted: rgba(255,255,255,0.12);
     }
-    .container {
-        max-width: 700px;
-        margin: 20px auto;
-        padding: 20px;
-        background: rgba(0,0,0,0.6);
-        border-radius: 10px;
+    *{box-sizing:border-box}
+    body{
+        margin:0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+        color:#fff;
+        -webkit-font-smoothing:antialiased;
     }
-    h1, h2 {
-        text-align: center;
+    .container{
+        max-width:900px;
+        margin:18px auto;
+        padding:18px;
+        background:var(--card-bg);
+        border-radius:12px;
     }
-    input, button {
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 5px;
+    h1,h2{margin:8px 0;text-align:center}
+    label{display:block;margin-top:8px;font-size:0.95rem}
+    input, button, select{
+        padding:10px;
+        margin-top:6px;
+        border-radius:8px;
         border: none;
-        font-size: 1em;
+        font-size:1rem;
     }
-    input[type="date"], input[type="text"], input[type="number"] {
-        width: 100%;
+    input[type="date"], input[type="text"], input[type="number"]{
+        width:100%;
+        background:rgba(255,255,255,0.03);
+        color:#fff;
     }
-    button {
-        cursor: pointer;
-        background: #ff3d00;
-        color: #fff;
-        font-weight: bold;
-        transition: 0.3s;
+    .row{display:flex;gap:10px;align-items:center}
+    .col{flex:1}
+    .dashboard{
+        display:flex;
+        gap:10px;
+        justify-content:space-between;
+        margin:12px 0;
+        flex-wrap:wrap;
     }
-    button:hover {
-        background: #8b2a0d;
-        transform: scale(1.05);
+    .dash-card{
+        background:var(--muted);
+        padding:12px;
+        border-radius:10px;
+        flex:1 1 30%;
+        text-align:center;
+        min-width:140px;
+    }
+    button{
+        background:var(--accent);
+        color:#fff;
+        cursor:pointer;
+        font-weight:600;
+        transition: transform .18s ease, background .18s ease;
+    }
+    button:hover{ transform:scale(1.03); background:var(--accent-hover) }
+
+    #search{width:100%; margin:10px 0; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); color:#fff }
+
+    /* table */
+    .table-wrap{ width:100%; overflow-x:auto; margin-top:10px; background:transparent; border-radius:8px; padding:6px 0; }
+    table{ width:100%; border-collapse:collapse; min-width:620px; }
+    th, td{ padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.95rem }
+    th{ background:rgba(255,255,255,0.03) }
+    .action-btn{ padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.04); cursor:pointer }
+    .action-btn:hover{ background:rgba(255,255,255,0.08) }
+
+    /* Weekly report */
+    .report{
+        margin-top:18px;
+        padding:12px;
+        background: rgba(255,255,255,0.03);
+        border-radius:10px;
+    }
+    .report-list{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px }
+    .report-item{
+        background:rgba(255,255,255,0.04);
+        padding:10px;
+        border-radius:8px;
+        min-width:160px;
+        text-align:center;
     }
 
-    .dashboard {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        margin-bottom: 15px;
-    }
-    .dashboard div {
-        background: rgba(0, 0, 0, 0.1);
-        padding: 10px;
-        border-radius: 8px;
-        flex: 1 1 30%;
-        margin: 5px;
-        text-align: center;
-    }
+    /* animation */
+    @keyframes fadeIn { from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:none} }
+    .expense-row{ animation: fadeIn .45s ease both }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-    th, td {
-        padding: 8px;
-        text-align: center;
-        border-bottom: 1px solid #762929;
-    }
-    td button {
-        padding: 5px;
-        font-size: 0.9em;
-        background: #ff3d00;
-    }
-    td button:hover {
-        background: #ff5c3c;
-    }
-
-    input#search {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 5px;
-        border: none;
-        font-size: 1em;
-    }
-
-    /* Animation */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .expense-row {
-        animation: fadeIn 0.5s ease;
-    }
-
-    @media (max-width: 600px) {
-        .dashboard div {
-            flex: 1 1 100%;
-        }
+    @media (max-width:640px){
+        .row{ flex-direction:column }
+        .dashboard{ flex-direction:column; gap:8px }
+        table { min-width:unset }
     }
 </style>
 </head>
@@ -107,127 +108,279 @@
 <div class="container">
     <h1>📊 Student Expense Calculator</h1>
 
-    <label for="budget">Monthly Budget 💰:</label>
-    <input type="number" id="budget" placeholder="Enter your budget">
+    <label for="budget">Monthly Budget 💰</label>
+    <input id="budget" type="number" placeholder="Enter monthly budget (₹)">
 
     <div class="dashboard">
-        <div>Total Expenses: ₹<span id="totalExpenses">0</span></div>
-        <div>Remaining Budget: ₹<span id="remainingBudget">0</span></div>
-        <div>Total Entries: <span id="totalEntries">0</span></div>
+        <div class="dash-card">Total Expenses: ₹<span id="totalExpenses">0</span></div>
+        <div class="dash-card">Remaining Budget: ₹<span id="remainingBudget">0</span></div>
+        <div class="dash-card">Total Entries: <span id="totalEntries">0</span></div>
     </div>
 
     <h2>Add Expense ➕</h2>
-    <input type="date" id="date">
-    <input type="text" id="item" placeholder="Item Name 📝">
-    <input type="number" id="amount" placeholder="Amount ₹">
-    <button id="addExpense">Add Expense ✅</button>
+    <div class="row">
+        <div class="col">
+            <label for="date">Date</label>
+            <input id="date" type="date">
+        </div>
+        <div class="col">
+            <label for="item">Item</label>
+            <input id="item" type="text" placeholder="Item name (e.g., Notebook)">
+        </div>
+    </div>
 
-    <input type="text" id="search" placeholder="Search by item or date 🔍">
+    <div class="row" style="margin-top:6px">
+        <div style="flex:1">
+            <label for="category">Category</label>
+            <input id="category" type="text" placeholder="Category (e.g., Stationary, Food)">
+        </div>
+        <div style="width:140px">
+            <label for="amount">Amount (₹)</label>
+            <input id="amount" type="number" placeholder="Amount">
+        </div>
+        <div style="width:120px; align-self:flex-end">
+            <button id="addExpense" style="width:100%">Add</button>
+        </div>
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Date 📅</th>
-                <th>Item 🛒</th>
-                <th>Amount ₹</th>
-                <th>Action ⚡</th>
-            </tr>
-        </thead>
-        <tbody id="expenseTable"></tbody>
-    </table>
+    <input id="search" type="text" placeholder="Search by item, date or category (e.g., 2025-12-01 or Stationary)">
+
+    <div class="table-wrap">
+        <table aria-label="expenses table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Amount (₹)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="expenseTable"></tbody>
+        </table>
+    </div>
+
+    <div class="report" id="weeklyReport">
+        <strong>Weekly Report (last 7 days)</strong>
+        <div class="report-list" id="reportList">
+            <!-- populated dynamically -->
+        </div>
+        <div style="margin-top:10px; font-size:0.9rem; color:rgba(255,255,255,0.8)">
+            Report shows total spent per category for the last 7 days (including today).
+        </div>
+    </div>
 </div>
 
 <script>
-let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
-let monthlyBudget = parseFloat(localStorage.getItem('budget')) || 0;
+/* -------------------------
+   Data and storage helpers
+   ------------------------- */
+const STORAGE_KEY = 'student_expenses_v2';
+const BUDGET_KEY = 'student_budget_v2';
 
+let expenses = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let monthlyBudget = parseFloat(localStorage.getItem(BUDGET_KEY)) || 0;
+
+/* --------- Elements --------- */
 const totalExpensesEl = document.getElementById('totalExpenses');
 const remainingBudgetEl = document.getElementById('remainingBudget');
 const totalEntriesEl = document.getElementById('totalEntries');
 const budgetInput = document.getElementById('budget');
 const searchInput = document.getElementById('search');
 
-budgetInput.value = monthlyBudget;
+budgetInput.value = monthlyBudget || '';
 
-function updateDashboard() {
-    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-    totalExpensesEl.textContent = total;
-    remainingBudgetEl.textContent = monthlyBudget - total;
-    totalEntriesEl.textContent = expenses.length;
+/* Utility: save */
+function saveAll(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+    localStorage.setItem(BUDGET_KEY, String(monthlyBudget || 0));
 }
 
-function renderTable(list = expenses) {
-    const table = document.getElementById('expenseTable');
-    table.innerHTML = '';
-    list.forEach((e, index) => {
-        const row = document.createElement('tr');
-        row.classList.add('expense-row');
-        row.innerHTML = `
+/* --------- Dashboard & Rendering --------- */
+/* Render table accepts list of {item,date,category,amount,idx} where idx is original index in expenses */
+function renderTable(listWithIndex){
+    const tbody = document.getElementById('expenseTable');
+    tbody.innerHTML = '';
+    (listWithIndex || expenses.map((e,i)=>({e, idx:i}))).forEach(wrapper => {
+        const e = wrapper.e;
+        const originalIndex = wrapper.idx;
+        const tr = document.createElement('tr');
+        tr.className = 'expense-row';
+        tr.innerHTML = `
             <td>${e.date}</td>
-            <td>${e.item}</td>
-            <td>₹${e.amount}</td>
+            <td style="text-align:left">${escapeHtml(e.item)}</td>
+            <td>${escapeHtml(e.category)}</td>
+            <td>₹${Number(e.amount).toFixed(2)}</td>
             <td>
-                <button onclick="editExpense(${index})">✏</button>
-                <button onclick="deleteExpense(${index})">🗑</button>
+                <button class="action-btn" data-action="edit" data-index="${originalIndex}">✏</button>
+                <button class="action-btn" data-action="delete" data-index="${originalIndex}">🗑</button>
             </td>
         `;
-        table.appendChild(row);
+        tbody.appendChild(tr);
     });
 }
 
-document.getElementById('addExpense').addEventListener('click', () => {
+/* Update top dashboard numbers */
+function updateDashboard(){
+    const total = expenses.reduce((s, it) => s + Number(it.amount || 0), 0);
+    totalExpensesEl.textContent = Number(total).toFixed(2);
+    remainingBudgetEl.textContent = Number((monthlyBudget || 0) - total).toFixed(2);
+    totalEntriesEl.textContent = expenses.length;
+    // also refresh weekly report
+    buildWeeklyReport();
+}
+
+/* Escape HTML to avoid injection if users paste markup */
+function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+}
+
+/* --------- Add / Edit / Delete logic --------- */
+document.getElementById('addExpense').addEventListener('click', (ev) => {
+    ev.preventDefault && ev.preventDefault();
     const date = document.getElementById('date').value;
     const item = document.getElementById('item').value.trim();
-    const amount = parseFloat(document.getElementById('amount').value);
+    let category = document.getElementById('category').value.trim();
+    category = category === ""?"Uncategorized" : category.toLowerCase();   
+     const amountRaw = document.getElementById('amount').value;
 
-    if (!date || !item || !amount) {
-        alert("Please fill all fields correctly!");
+    // validation
+    if(!date || !item || amountRaw === '' || amountRaw === null){
+        alert('Please fill Date, Item and Amount.');
+        return;
+    }
+    const amount = parseFloat(amountRaw);
+    if(Number.isNaN(amount) || amount <= 0){
+        alert('Please enter a valid positive amount.');
         return;
     }
 
-    expenses.push({ date, item, amount });
-    localStorage.setItem('expenses', JSON.stringify(expenses));
-
+    // Add to expenses
+    expenses.push({ date, item, category, amount });
+    saveAll();
     renderTable();
     updateDashboard();
 
+    // clear inputs
     document.getElementById('date').value = '';
     document.getElementById('item').value = '';
+    document.getElementById('category').value = '';
     document.getElementById('amount').value = '';
 });
 
-function editExpense(index) {
-    const e = expenses[index];
-    document.getElementById('date').value = e.date;
-    document.getElementById('item').value = e.item;
-    document.getElementById('amount').value = e.amount;
-    deleteExpense(index);
-}
+/* Delegate clicks on edit/delete buttons */
+document.getElementById('expenseTable').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const action = btn.dataset.action;
+    const idx = Number(btn.dataset.index);
+    if(action === 'delete'){
+        // remove item
+        if(!Number.isInteger(idx)) return;
+        expenses.splice(idx,1);
+        saveAll();
+        renderTable();
+        updateDashboard();
+    } else if(action === 'edit'){
+        if(!Number.isInteger(idx)) return;
+        const it = expenses[idx];
+        document.getElementById('date').value = it.date;
+        document.getElementById('item').value = it.item;
+        document.getElementById('category').value = it.category;
+        document.getElementById('amount').value = it.amount;
+        // delete original so after editing user will add as new entry
+        expenses.splice(idx,1);
+        saveAll();
+        renderTable();
+        updateDashboard();
+    }
+});
 
-function deleteExpense(index) {
-    expenses.splice(index, 1);
-    localStorage.setItem('expenses', JSON.stringify(expenses));
-    renderTable();
-    updateDashboard();
-}
-
+/* Budget input handler */
 budgetInput.addEventListener('input', () => {
-    monthlyBudget = parseFloat(budgetInput.value) || 0;
-    localStorage.setItem('budget', monthlyBudget);
+    const v = parseFloat(budgetInput.value);
+    monthlyBudget = Number.isNaN(v) ? 0 : v;
+    saveAll();
     updateDashboard();
 });
 
+/* --------- Search / Filter --------- */
 searchInput.addEventListener('input', () => {
-    const filter = searchInput.value.toLowerCase();
-    const filtered = expenses.filter(e => 
-        e.item.toLowerCase().includes(filter) || e.date.includes(filter)
-    );
+    const q = searchInput.value.trim().toLowerCase();
+    if(q === ''){
+        renderTable();
+        return;
+    }
+    // build list with original indices
+    const filtered = expenses.map((e, i)=>({e, idx:i})).filter(w => {
+        const e = w.e;
+        return (e.item || '').toLowerCase().includes(q)
+            || (e.category || '').toLowerCase().includes(q)
+            || (e.date || '').includes(q);
+    });
     renderTable(filtered);
 });
 
-// Initialize
+/* --------- Weekly Report (last 7 days) --------- */
+/* Computes totals per category for expenses whose date is within last 7 days (including today) */
+function buildWeeklyReport(){
+    const reportContainer = document.getElementById('reportList');
+    reportContainer.innerHTML = '';
+    if(!expenses.length){
+        reportContainer.innerHTML = '<div style="opacity:0.8">No expenses yet</div>';
+        return;
+    }
+
+    // compute date range: last 7 days including today
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(start.getDate() - 6); // 7 days total: start..today
+
+    // helper: convert YYYY-MM-DD to Date (local)
+    function ymdToDate(s){
+        const [y,m,d] = s.split('-').map(Number);
+        if(!y || !m || !d) return null;
+        return new Date(y, m-1, d);
+    }
+
+    // accumulate per category
+    const totals = {}; // category -> number
+    expenses.forEach(e => {
+        const dt = ymdToDate(e.date);
+        if(!dt) return;
+        // compare (only date part)
+        if(dt >= new Date(start.getFullYear(), start.getMonth(), start.getDate()) &&
+           dt <= new Date(today.getFullYear(), today.getMonth(), today.getDate())){
+            const cat = (e.category || 'Uncategorized').trim().toLowerCase();
+            totals[cat] = (totals[cat] || 0) + Number(e.amount || 0);
+        }
+    });
+
+    // if no items in last 7 days
+    if(Object.keys(totals).length === 0){
+        reportContainer.innerHTML = '<div style="opacity:0.8">No expenses in the last 7 days</div>';
+        return;
+    }
+
+    // sort categories by amount desc
+    const sorted = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+
+    sorted.forEach(([cat, amt]) => {
+        const div = document.createElement('div');
+        div.className = 'report-item';
+        div.innerHTML = `<div style="font-weight:700">${escapeHtml(cat)}</div><div style="margin-top:6px">₹${Number(amt).toFixed(2)}</div>`
+        reportContainer.appendChild(div);
+    });
+}
+
+/* Initialize UI */
 renderTable();
 updateDashboard();
+buildWeeklyReport();
+
+/* Optional: expose for debugging (remove in production) */
+window._app = { expenses, saveAll, buildWeeklyReport };
+
 </script>
 </body>
 </html>
